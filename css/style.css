@@ -1539,6 +1539,24 @@ footer .wrapper .footer-links .footer-bar-items .order-btn {
   background-repeat: no-repeat;
 }
 
+@media (min-width: 48em) {
+  #homepage main #contact .wrapper form fieldset .form-elements {
+    display: -webkit-box;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  #homepage main #contact .wrapper form fieldset .form-elements .email-container input {
+    margin-bottom: 0;
+  }
+  #homepage main #contact .wrapper form fieldset .form-elements button {
+    display: inline-block;
+    border-radius: 0 30px 30px 0;
+    padding-left: 0;
+    width: 250px;
+  }
+}
+
 #homepage main #contact .wrapper:before {
   content: "";
   background: url(../img/dots.png);

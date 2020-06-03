@@ -43,3 +43,22 @@ function scrollAnchors(e, respond = null) {
 		}
 	}, 100);
 }
+
+
+// Close mobile nav when item selected
+document.addEventListener('click', function (event) {
+  var body = document.body;
+  var bottomNav = document.getElementById("bottom-nav-bar");
+  var topNav = document.getElementById("top-nav-bar");
+
+	// If the clicked element doesn't have the right selector, bail
+	if (!event.target.matches('.nav-item')) return;
+
+	// Don't follow the link
+	event.preventDefault();
+
+  body.style.overflow = "visible";
+  bottomNav.style.display = "none";
+  topNav.style.backgroundColor = "transparent";
+
+}, false);
