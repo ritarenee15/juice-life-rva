@@ -2302,10 +2302,11 @@ footer {
               }
             }
           }
-          @media (min-width: $mq-mediumSmall) {
+          @media (min-width: $mq-medium) {
             fieldset .form-elements {
               @include flexbox;
               .email-container {
+                width: 60%;
                 input {
                   margin-bottom: 0;
                 }

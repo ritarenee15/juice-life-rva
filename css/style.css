@@ -1539,12 +1539,15 @@ footer .wrapper .footer-links .footer-bar-items .order-btn {
   background-repeat: no-repeat;
 }
 
-@media (min-width: 48em) {
+@media (min-width: 56.25em) {
   #homepage main #contact .wrapper form fieldset .form-elements {
     display: -webkit-box;
     display: -moz-flex;
     display: -ms-flexbox;
     display: flex;
+  }
+  #homepage main #contact .wrapper form fieldset .form-elements .email-container {
+    width: 60%;
   }
   #homepage main #contact .wrapper form fieldset .form-elements .email-container input {
     margin-bottom: 0;
