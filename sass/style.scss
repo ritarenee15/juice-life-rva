@@ -1,0 +1,2340 @@
+// =================================
+//	Flex
+// =================================
+// Flexbox Mixins
+
+// Flexbox Containers
+//
+// The 'flex' value causes an element to generate a block-level flex
+// container box.
+//
+// The 'inline-flex' value causes an element to generate a inline-level
+// flex container box. 
+//
+// display: flex | inline-flex
+//
+// http://w3.org/tr/css3-flexbox/#flex-containers
+//
+// (Placeholder selectors for each type, for those who rather @extend)
+
+@mixin flexbox {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+%flexbox { @include flexbox; }
+
+//----------------------------------
+
+@mixin inline-flex {
+	display: -webkit-inline-box;
+	display: -webkit-inline-flex;
+	display: -moz-inline-flex;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+}
+
+%inline-flex { @include inline-flex; }
+
+//----------------------------------------------------------------------
+
+// Flexbox Direction
+//
+// The 'flex-direction' property specifies how flex items are placed in
+// the flex container, by setting the direction of the flex container's
+// main axis. This determines the direction that flex items are laid out in. 
+//
+// Values: row | row-reverse | column | column-reverse
+// Default: row
+//
+// http://w3.org/tr/css3-flexbox/#flex-direction-property
+
+@mixin flex-direction($value: row) {
+	@if $value == row-reverse {
+		-webkit-box-direction: reverse;
+		-webkit-box-orient: horizontal;
+	} @else if $value == column {
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+	} @else if $value == column-reverse {
+		-webkit-box-direction: reverse;
+		-webkit-box-orient: vertical;
+	} @else {
+		-webkit-box-direction: normal;
+		-webkit-box-orient: horizontal;
+	}
+	-webkit-flex-direction: $value;
+	-moz-flex-direction: $value;
+	-ms-flex-direction: $value;
+	flex-direction: $value;
+}
+	// Shorter version:
+	@mixin flex-dir($value: false) { @include flex-direction($value); }
+
+//----------------------------------------------------------------------
+
+// Flexbox Wrap
+//
+// The 'flex-wrap' property controls whether the flex container is single-line
+// or multi-line, and the direction of the cross-axis, which determines
+// the direction new lines are stacked in. 
+//
+// Values: nowrap | wrap | wrap-reverse
+// Default: nowrap
+//
+// http://w3.org/tr/css3-flexbox/#flex-wrap-property
+
+@mixin flex-wrap($value: nowrap) {
+	// No Webkit Box fallback.
+	-webkit-flex-wrap: $value;
+	-moz-flex-wrap: $value;
+	@if $value == nowrap {
+		-ms-flex-wrap: none;
+	} @else { 
+		-ms-flex-wrap: $value; 
+	}
+	flex-wrap: $value;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Flow (shorthand)
+//
+// The 'flex-flow' property is a shorthand for setting the 'flex-direction'
+// and 'flex-wrap' properties, which together define the flex container's
+// main and cross axes.
+//
+// Values: <flex-direction> | <flex-wrap> 
+// Default: row nowrap
+//
+// http://w3.org/tr/css3-flexbox/#flex-flow-property
+
+@mixin flex-flow($values: (row nowrap)) {
+	// No Webkit Box fallback.
+	-webkit-flex-flow: $values;
+	-moz-flex-flow: $values;
+	-ms-flex-flow: $values;
+	flex-flow: $values;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Order
+//
+// The 'order' property controls the order in which flex items appear within
+// their flex container, by assigning them to ordinal groups.
+//
+// Default: 0
+//
+// http://w3.org/tr/css3-flexbox/#order-property
+
+@mixin order($int: 0) {
+	-webkit-box-ordinal-group: $int + 1;
+	-webkit-order: $int;
+	-moz-order: $int;
+	-ms-flex-order: $int;
+	order: $int;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Grow
+//
+// The 'flex-grow' property sets the flex grow factor. Negative numbers
+// are invalid.
+//
+// Default: 0
+//
+// http://w3.org/tr/css3-flexbox/#flex-grow-property
+
+@mixin flex-grow($int: 0) {
+	-webkit-box-flex: $int;
+	-webkit-flex-grow: $int;
+	-moz-flex-grow: $int;
+	-ms-flex-positive: $int;
+	flex-grow: $int;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Shrink
+//
+// The 'flex-shrink' property sets the flex shrink factor. Negative numbers
+// are invalid.
+//
+// Default: 1
+//
+// http://w3.org/tr/css3-flexbox/#flex-shrink-property
+
+@mixin flex-shrink($int: 1) {
+	-webkit-flex-shrink: $int;
+	-moz-flex-shrink: $int;
+	-ms-flex-negative: $int;
+	flex-shrink: $int;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Basis
+//
+// The 'flex-basis' property sets the flex basis. Negative lengths are invalid. 
+//
+// Values: Like "width" 
+// Default: auto
+//
+// http://www.w3.org/TR/css3-flexbox/#flex-basis-property
+
+@mixin flex-basis($value: auto) {
+	-webkit-flex-basis: $value;
+	-moz-flex-basis: $value;
+	-ms-flex-preferred-size: $value;
+	flex-basis: $value;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox "Flex" (shorthand)
+//
+// The 'flex' property specifies the components of a flexible length: the
+// flex grow factor and flex shrink factor, and the flex basis. When an
+// element is a flex item, 'flex' is consulted instead of the main size
+// property to determine the main size of the element. If an element is
+// not a flex item, 'flex' has no effect.
+//
+// Values: none | <flex-grow> <flex-shrink> || <flex-basis>
+// Default: See individual properties (1 1 0).
+//
+// http://w3.org/tr/css3-flexbox/#flex-property
+
+@mixin flex($fg: 1, $fs: null, $fb: null) {
+    
+	// Set a variable to be used by box-flex properties
+	$fg-boxflex: $fg;
+
+	// Box-Flex only supports a flex-grow value so let's grab the
+	// first item in the list and just return that.
+	@if type-of($fg) == 'list' {
+		$fg-boxflex: nth($fg, 1);
+	}
+
+	-webkit-box-flex: $fg-boxflex;
+	-webkit-flex: $fg $fs $fb;
+	-moz-box-flex: $fg-boxflex;
+	-moz-flex: $fg $fs $fb;
+	-ms-flex: $fg $fs $fb;
+	flex: $fg $fs $fb;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Justify Content
+//
+// The 'justify-content' property aligns flex items along the main axis
+// of the current line of the flex container. This is done after any flexible
+// lengths and any auto margins have been resolved. Typically it helps distribute
+// extra free space leftover when either all the flex items on a line are
+// inflexible, or are flexible but have reached their maximum size. It also
+// exerts some control over the alignment of items when they overflow the line.
+//
+// Note: 'space-*' values not supported in older syntaxes.
+//
+// Values: flex-start | flex-end | center | space-between | space-around
+// Default: flex-start
+//
+// http://w3.org/tr/css3-flexbox/#justify-content-property
+
+@mixin justify-content($value: flex-start) {
+	@if $value == flex-start {
+		-webkit-box-pack: start;
+		-ms-flex-pack: start;
+	} @else if $value == flex-end {
+		-webkit-box-pack: end;
+		-ms-flex-pack: end;
+	} @else if $value == space-between {
+		-webkit-box-pack: justify;
+		-ms-flex-pack: justify;
+	} @else if $value == space-around {
+		-ms-flex-pack: distribute;		
+	} @else {
+		-webkit-box-pack: $value;
+		-ms-flex-pack: $value;
+	}
+	-webkit-justify-content: $value;
+	-moz-justify-content: $value;
+	justify-content: $value;
+}
+	// Shorter version:
+	@mixin flex-just($value: flex-start) { @include justify-content($value); }
+
+//----------------------------------------------------------------------
+
+// Flexbox Align Items
+//
+// Flex items can be aligned in the cross axis of the current line of the
+// flex container, similar to 'justify-content' but in the perpendicular
+// direction. 'align-items' sets the default alignment for all of the flex
+// container's items, including anonymous flex items. 'align-self' allows
+// this default alignment to be overridden for individual flex items. (For
+// anonymous flex items, 'align-self' always matches the value of 'align-items'
+// on their associated flex container.) 
+//
+// Values: flex-start | flex-end | center | baseline | stretch
+// Default: stretch
+//
+// http://w3.org/tr/css3-flexbox/#align-items-property
+
+@mixin align-items($value: stretch) {
+	@if $value == flex-start {
+		-webkit-box-align: start;
+		-ms-flex-align: start;
+	} @else if $value == flex-end {
+		-webkit-box-align: end;
+		-ms-flex-align: end;
+	} @else {
+		-webkit-box-align: $value;
+		-ms-flex-align: $value;
+	}
+	-webkit-align-items: $value;
+	-moz-align-items: $value;
+	align-items: $value;
+}
+
+//----------------------------------
+
+// Flexbox Align Self
+//
+// Values: auto | flex-start | flex-end | center | baseline | stretch
+// Default: auto
+
+@mixin align-self($value: auto) {
+	// No Webkit Box Fallback.
+	-webkit-align-self: $value;
+	-moz-align-self: $value;
+	@if $value == flex-start {
+		-ms-flex-item-align: start;
+	} @else if $value == flex-end {
+		-ms-flex-item-align: end;
+	} @else {
+		-ms-flex-item-align: $value;
+	}
+	align-self: $value;
+}
+
+//----------------------------------------------------------------------
+
+// Flexbox Align Content
+//
+// The 'align-content' property aligns a flex container's lines within the
+// flex container when there is extra space in the cross-axis, similar to
+// how 'justify-content' aligns individual items within the main-axis. Note,
+// this property has no effect when the flexbox has only a single line.
+//
+// Values: flex-start | flex-end | center | space-between | space-around | stretch
+// Default: stretch
+//
+// http://w3.org/tr/css3-flexbox/#align-content-property
+
+@mixin align-content($value: stretch) {
+	// No Webkit Box Fallback.
+	-webkit-align-content: $value;
+	-moz-align-content: $value;
+	@if $value == flex-start {
+		-ms-flex-line-pack: start;
+	} @else if $value == flex-end {
+		-ms-flex-line-pack: end;
+	} @else {
+		-ms-flex-line-pack: $value;
+	}
+	align-content: $value;
+}
+
+// =================================
+//	HTML5 Boilerplate Base
+// =================================
+/*! HTML5 Boilerplate v4.3.0 | MIT License | http://h5bp.com/ */
+
+/*
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+/* =============================================
+   Base styles: opinionated defaults
+   ============================================= */
+
+   html,
+   button,
+   input,
+   select,
+   textarea {
+       color: #222;
+   }
+   
+   html {
+       font-size: 1em;
+       line-height: 1.4;
+   }
+   
+   /*
+    * Remove text-shadow in selection highlight: h5bp.com/i
+    * These selection rule sets have to be separate.
+    * Customize the background color to match your design.
+    */
+   
+   ::-moz-selection {
+       background: #b3d4fc;
+       text-shadow: none;
+   }
+   
+   ::selection {
+       background: #b3d4fc;
+       text-shadow: none;
+   }
+   
+   /*
+    * A better looking default horizontal rule
+    */
+   
+   hr {
+       display: block;
+       height: 1px;
+       border: 0;
+       border-top: 1px solid #ccc;
+       margin: 1em 0;
+       padding: 0;
+   }
+   
+   /*
+    * Remove the gap between images, videos, audio and canvas and the bottom of
+    * their containers: h5bp.com/i/440
+    */
+   
+   audio,
+   canvas,
+   img,
+   video {
+       vertical-align: middle;
+   }
+   
+   /*
+    * Remove default fieldset styles.
+    */
+   
+   fieldset {
+       border: 0;
+       margin: 0;
+       padding: 0;
+   }
+   
+   /*
+    * Allow only vertical resizing of textareas.
+    */
+   
+   textarea {
+       resize: vertical;
+   }
+   
+   /* =============================================
+      Browse Happy prompt
+      ============================================= */
+   
+   .browsehappy {
+       margin: 0.2em 0;
+       background: #ccc;
+       color: #000;
+       padding: 0.2em 0;
+   }
+   
+   /* =============================================
+      Helper classes
+      ============================================= */
+   
+   /*
+    * Image replacement
+    */
+   
+   .ir {
+       background-color: transparent;
+       border: 0;
+       overflow: hidden;
+       /* IE 6/7 fallback */
+       *text-indent: -9999px;
+   }
+   
+   .ir:before {
+       content: "";
+       display: block;
+       width: 0;
+       height: 150%;
+   }
+   
+   /*
+    * Hide from both screenreaders and browsers: h5bp.com/u
+    */
+   
+   .hidden {
+       display: none !important;
+       visibility: hidden;
+   }
+   
+   /*
+    * Hide only visually, but have it available for screenreaders: h5bp.com/v
+    */
+   
+   .visuallyhidden {
+       border: 0;
+       clip: rect(0 0 0 0);
+       height: 1px;
+       margin: -1px;
+       overflow: hidden;
+       padding: 0;
+       position: absolute;
+       width: 1px;
+   }
+   
+   /*
+    * Extends the .visuallyhidden class to allow the element to be focusable
+    * when navigated to via the keyboard: h5bp.com/p
+    */
+   
+   .visuallyhidden.focusable:active,
+   .visuallyhidden.focusable:focus {
+       clip: auto;
+       height: auto;
+       margin: 0;
+       overflow: visible;
+       position: static;
+       width: auto;
+   }
+   
+   /*
+    * Hide visually and from screenreaders, but maintain layout
+    */
+   
+   .invisible {
+       visibility: hidden;
+   }
+   
+   /*
+    * Clearfix: contain floats
+    *
+    * For modern browsers
+    * 1. The space content is one way to avoid an Opera bug when the
+    *    `contenteditable` attribute is included anywhere else in the document.
+    *    Otherwise it causes space to appear at the top and bottom of elements
+    *    that receive the `clearfix` class.
+    * 2. The use of `table` rather than `block` is only necessary if using
+    *    `:before` to contain the top-margins of child elements.
+    */
+   
+   .clearfix:before,
+   .clearfix:after {
+       content: " "; /* 1 */
+       display: table; /* 2 */
+   }
+   
+   .clearfix:after {
+       clear: both;
+   }
+
+
+
+
+// =================================
+//	Normalize
+// =================================
+/*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+
+/**
+ * 1. Change the default font family in all browsers (opinionated).
+ * 2. Correct the line height in all browsers.
+ * 3. Prevent adjustments of font size after orientation changes in
+ *    IE on Windows Phone and in iOS.
+ */
+
+/* Document
+   ========================================================================== */
+
+   html {
+    font-family: sans-serif; /* 1 */
+    line-height: 1.15; /* 2 */
+    -ms-text-size-adjust: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 3 */
+  }
+  
+  /* Sections
+     ========================================================================== */
+  
+  /**
+   * Remove the margin in all browsers (opinionated).
+   */
+  
+  body {
+    margin: 0;
+  }
+  
+  /**
+   * Add the correct display in IE 9-.
+   */
+  
+  article,
+  aside,
+  footer,
+  header,
+  nav,
+  section {
+    display: block;
+  }
+  
+  /**
+   * Correct the font size and margin on `h1` elements within `section` and
+   * `article` contexts in Chrome, Firefox, and Safari.
+   */
+  
+  h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+  }
+  
+  /* Grouping content
+     ========================================================================== */
+  
+  /**
+   * Add the correct display in IE 9-.
+   * 1. Add the correct display in IE.
+   */
+  
+  figcaption,
+  figure,
+  main { /* 1 */
+    display: block;
+  }
+  
+  /**
+   * Add the correct margin in IE 8.
+   */
+  
+  figure {
+    margin: 1em 40px;
+  }
+  
+  /**
+   * 1. Add the correct box sizing in Firefox.
+   * 2. Show the overflow in Edge and IE.
+   */
+  
+  hr {
+    box-sizing: content-box; /* 1 */
+    height: 0; /* 1 */
+    overflow: visible; /* 2 */
+  }
+  
+  /**
+   * 1. Correct the inheritance and scaling of font size in all browsers.
+   * 2. Correct the odd `em` font sizing in all browsers.
+   */
+  
+  pre {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+  }
+  
+  /* Text-level semantics
+     ========================================================================== */
+  
+  /**
+   * 1. Remove the gray background on active links in IE 10.
+   * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.
+   */
+  
+  a {
+    background-color: transparent; /* 1 */
+    -webkit-text-decoration-skip: objects; /* 2 */
+  }
+  
+  /**
+   * Remove the outline on focused links when they are also active or hovered
+   * in all browsers (opinionated).
+   */
+  
+  a:active,
+  a:hover {
+    outline-width: 0;
+  }
+  
+  /**
+   * 1. Remove the bottom border in Firefox 39-.
+   * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+   */
+  
+  abbr[title] {
+    border-bottom: none; /* 1 */
+    text-decoration: underline; /* 2 */
+    text-decoration: underline dotted; /* 2 */
+  }
+  
+  /**
+   * Prevent the duplicate application of `bolder` by the next rule in Safari 6.
+   */
+  
+  b,
+  strong {
+    font-weight: inherit;
+  }
+  
+  /**
+   * Add the correct font weight in Chrome, Edge, and Safari.
+   */
+  
+  b,
+  strong {
+    font-weight: bolder;
+  }
+  
+  /**
+   * 1. Correct the inheritance and scaling of font size in all browsers.
+   * 2. Correct the odd `em` font sizing in all browsers.
+   */
+  
+  code,
+  kbd,
+  samp {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 1em; /* 2 */
+  }
+  
+  /**
+   * Add the correct font style in Android 4.3-.
+   */
+  
+  dfn {
+    font-style: italic;
+  }
+  
+  /**
+   * Add the correct background and color in IE 9-.
+   */
+  
+  mark {
+    background-color: #ff0;
+    color: #000;
+  }
+  
+  /**
+   * Add the correct font size in all browsers.
+   */
+  
+  small {
+    font-size: 80%;
+  }
+  
+  /**
+   * Prevent `sub` and `sup` elements from affecting the line height in
+   * all browsers.
+   */
+  
+  sub,
+  sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  
+  sub {
+    bottom: -0.25em;
+  }
+  
+  sup {
+    top: -0.5em;
+  }
+  
+  /* Embedded content
+     ========================================================================== */
+  
+  /**
+   * Add the correct display in IE 9-.
+   */
+  
+  audio,
+  video {
+    display: inline-block;
+  }
+  
+  /**
+   * Add the correct display in iOS 4-7.
+   */
+  
+  audio:not([controls]) {
+    display: none;
+    height: 0;
+  }
+  
+  /**
+   * Remove the border on images inside links in IE 10-.
+   */
+  
+  img {
+    border-style: none;
+  }
+  
+  /**
+   * Hide the overflow in IE.
+   */
+  
+  svg:not(:root) {
+    overflow: hidden;
+  }
+  
+  /* Forms
+     ========================================================================== */
+  
+  /**
+   * 1. Change the font styles in all browsers (opinionated).
+   * 2. Remove the margin in Firefox and Safari.
+   */
+  
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font-family: sans-serif; /* 1 */
+    font-size: 100%; /* 1 */
+    line-height: 1.15; /* 1 */
+    margin: 0; /* 2 */
+  }
+  
+  /**
+   * Show the overflow in IE.
+   * 1. Show the overflow in Edge.
+   */
+  
+  button,
+  input { /* 1 */
+    overflow: visible;
+  }
+  
+  /**
+   * Remove the inheritance of text transform in Edge, Firefox, and IE.
+   * 1. Remove the inheritance of text transform in Firefox.
+   */
+  
+  button,
+  select { /* 1 */
+    text-transform: none;
+  }
+  
+  /**
+   * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+   *    controls in Android 4.
+   * 2. Correct the inability to style clickable types in iOS and Safari.
+   */
+  
+  button,
+  html [type="button"], /* 1 */
+  [type="reset"],
+  [type="submit"] {
+    -webkit-appearance: button; /* 2 */
+  }
+  
+  /**
+   * Remove the inner border and padding in Firefox.
+   */
+  
+  button::-moz-focus-inner,
+  [type="button"]::-moz-focus-inner,
+  [type="reset"]::-moz-focus-inner,
+  [type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+  }
+  
+  /**
+   * Restore the focus styles unset by the previous rule.
+   */
+  
+  button:-moz-focusring,
+  [type="button"]:-moz-focusring,
+  [type="reset"]:-moz-focusring,
+  [type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+  }
+  
+  /**
+   * Change the border, margin, and padding in all browsers (opinionated).
+   */
+  
+  fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+  }
+  
+  /**
+   * 1. Correct the text wrapping in Edge and IE.
+   * 2. Correct the color inheritance from `fieldset` elements in IE.
+   * 3. Remove the padding so developers are not caught out when they zero out
+   *    `fieldset` elements in all browsers.
+   */
+  
+  legend {
+    box-sizing: border-box; /* 1 */
+    color: inherit; /* 2 */
+    display: table; /* 1 */
+    max-width: 100%; /* 1 */
+    padding: 0; /* 3 */
+    white-space: normal; /* 1 */
+  }
+  
+  /**
+   * 1. Add the correct display in IE 9-.
+   * 2. Add the correct vertical alignment in Chrome, Firefox, and Opera.
+   */
+  
+  progress {
+    display: inline-block; /* 1 */
+    vertical-align: baseline; /* 2 */
+  }
+  
+  /**
+   * Remove the default vertical scrollbar in IE.
+   */
+  
+  textarea {
+    overflow: auto;
+  }
+  
+  /**
+   * 1. Add the correct box sizing in IE 10-.
+   * 2. Remove the padding in IE 10-.
+   */
+  
+  [type="checkbox"],
+  [type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+  }
+  
+  /**
+   * Correct the cursor style of increment and decrement buttons in Chrome.
+   */
+  
+  [type="number"]::-webkit-inner-spin-button,
+  [type="number"]::-webkit-outer-spin-button {
+    height: auto;
+  }
+  
+  /**
+   * 1. Correct the odd appearance in Chrome and Safari.
+   * 2. Correct the outline style in Safari.
+   */
+  
+  [type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    outline-offset: -2px; /* 2 */
+  }
+  
+  /**
+   * Remove the inner padding and cancel buttons in Chrome and Safari on macOS.
+   */
+  
+  [type="search"]::-webkit-search-cancel-button,
+  [type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  
+  /**
+   * 1. Correct the inability to style clickable types in iOS and Safari.
+   * 2. Change font properties to `inherit` in Safari.
+   */
+  
+  ::-webkit-file-upload-button {
+    -webkit-appearance: button; /* 1 */
+    font: inherit; /* 2 */
+  }
+  
+  /* Interactive
+     ========================================================================== */
+  
+  /*
+   * Add the correct display in IE 9-.
+   * 1. Add the correct display in Edge, IE, and Firefox.
+   */
+  
+  details, /* 1 */
+  menu {
+    display: block;
+  }
+  
+  /*
+   * Add the correct display in all browsers.
+   */
+  
+  summary {
+    display: list-item;
+  }
+  
+  /* Scripting
+     ========================================================================== */
+  
+  /**
+   * Add the correct display in IE 9-.
+   */
+  
+  canvas {
+    display: inline-block;
+  }
+  
+  /**
+   * Add the correct display in IE.
+   */
+  
+  template {
+    display: none;
+  }
+  
+  /* Hidden
+     ========================================================================== */
+  
+  /**
+   * Add the correct display in IE 10-.
+   */
+  
+  [hidden] {
+    display: none;
+  }
+
+
+// =================================
+//	Royal Helpers
+// =================================
+// ================
+// Royall Mixins
+// ================
+
+
+// ================
+// Shorthand @font-face Declaration
+
+
+// ================
+// Hi-Res Display Query
+
+@mixin mres($_mq-density: "1.1") {
+
+    ////// Description:
+      // - mixin to output media query to detect hi-res displays
+      ////
+    
+    ////// @param $_mq-density
+      // - the pixel density you want to check for
+      ////
+    
+      @media (-webkit-min-device-pixel-ratio: $_mq-density),
+             (min-resolution: $_mq-density + "dppx") {
+        @content;
+      }
+    }
+    
+    
+    // ================
+    // Hi-Res Optimized Background Images
+    
+    @mixin backgroundImage($_p-img: "default", $_p-ext: "png", $_p-hiRes: "-2x", $_mq-hiResMin: "1.1") {
+    
+    ////// Description:
+      // - mixin to output background images optimized for hi-res screens using a double-size image
+      ////
+    
+    ////// @param $_p-img
+      // - the base file name
+      // - should be shared by both default image and double-size image
+      // - should not include file extension
+      ////
+    
+    ////// @param $_p-ext
+      // - the file extension being used
+      ////
+    
+    ////// @param $_p-hiRes
+      // - the suffix added to the base filename for the double-size image
+      ////
+    
+    ////// @param $_mq-hiResMin
+      // - the minimum pixel density at which the double-size image should be applied
+      ////
+    
+      background: {
+        image: image-url($_p-img + "." + $_p-ext);
+        size: contain;
+        repeat: no-repeat;
+      };
+    
+      @if ($_x-hiResVersion == true) {
+        @include mres($_mq-hiResMin) {
+          background-image: image-url($_p-img + $_p-hiRes + "." + $_p-ext);
+        };
+      }
+    }
+    
+    
+    // ================
+    // Wide Form Layout
+    
+    @mixin wideForm($_mq-breakpoint: 56.25em, $_d-formLabelWidth: 33.333%, $_d-formLabelPad: 0.5em, $_x-stackClass: ".question-stacked") {
+    
+    ////// Description:
+      // - mixin to automatically format RMS forms for large screens
+      // - places labels to the left and form fields to the right
+      // - uses inline-block for layout
+      // - can also accept content inside mixin ... these styles will only be applied when the wide form layout is in effect, at the screen size defined in $_mq-breakpoint
+      ////
+    
+    ////// @param $_mq-breakpoint
+      // - the screen size at which the wide form layout should be applied
+      // - default to 56.25em (900px)
+      ////
+    
+    ////// @param $_d-formLabelWidth
+      // - the percentage width of the label (relative to the question container)
+      ////
+    
+    ////// @param $_d-formLabelPad
+      // - the top and bottom padding applied to the label to maintain vertical alignment with the form field
+      ////
+    
+    ////// @param $_x-stackClass
+      // - class that can optionally be applied to questions to override the wide form layout
+      ////
+    
+      @media (min-width: #{$_mq-breakpoint}) {
+        .question {
+          &:not(.type_checkbox):not(.type_ethnicity):not(#{$_x-stackClass}) {
+            & > label,
+            & > .rte-q-label {
+              display: inline-block;
+              width: $_d-formLabelWidth;
+              padding: $_d-formLabelPad 5% $_d-formLabelPad 0;
+              vertical-align: top;
+    
+              & ~ * {
+                display: inline-block;
+                width: calc(#{100% - $_d-formLabelWidth} - 0.375em);
+                vertical-align: top;
+    
+                &.choice {
+                  margin: #{$_d-formLabelPad * 0.75} 0;
+                }
+              }
+            }
+          }
+    
+          &.related-question {
+            padding-left: calc(#{$_d-formLabelWidth} + 0.375em);
+          }
+        }
+    
+        @content;
+      }
+    }
+    
+    
+    // ================
+    // Wide Form Layout (Flexbox Version)
+    
+    @mixin wideFormFlex($_mq-breakpoint: 56.25em, $_d-formLabelWidth: 33.333%, $_d-formLabelPad: 0.5em, $_x-stackClass: ".question-stacked") {
+    
+    ////// Description:
+      // - mixin to automatically format RMS forms for large screens
+      // - places labels to the left and form fields to the right
+      // - uses Flexbox for layout
+      // - can also accept content inside mixin ... these styles will only be applied when the wide form layout is in effect, at the screen size defined in $_mq-breakpoint
+      ////
+    
+    ////// @param $_mq-breakpoint
+      // - the screen size at which the wide form layout should be applied
+      // - default to 56.25em (900px)
+      ////
+    
+    ////// @param $_d-formLabelWidth
+      // - the percentage width of the label (relative to the question container)
+      ////
+    
+    ////// @param $_d-formLabelPad
+      // - the top and bottom padding applied to the label to maintain vertical alignment with the form field
+      ////
+    
+    ////// @param $_x-stackClass
+      // - class that can optionally be applied to questions to override the wide form layout
+      ////
+    
+      @media (min-width: #{$_mq-breakpoint}) {
+        .question {
+          &:not(.type_checkbox):not(.type_ethnicity):not(#{$_x-stackClass}) {
+            @include flexbox;
+            @include flex-wrap(wrap);
+            @include align-items(flex-start);
+    
+            & > label,
+            & > .rte-q-label {
+              padding: $_d-formLabelPad 5% $_d-formLabelPad 0;
+              width:$_d-formLabelWidth;
+    
+              & ~ * {
+                width: calc(100% - #{$_d-formLabelWidth});
+    
+                &.choice {
+                  margin: #{$_d-formLabelPad * 0.75} 0;
+                }
+              }
+    
+              & ~ .help {
+                width:100%;
+              }
+            }
+          }
+    
+          &.related-question {
+            padding-left: $_d-formLabelWidth;
+          }
+        }
+    
+        @content;
+      }
+    }
+    
+    
+    // ================
+    // Fluid Type Scaling
+    
+    @mixin fluidTypeSize($_f-maxFont, $_f-minFont: 1, $_mq-maxWidth: 75, $_mq-minWidth: 20) {
+    
+    ////// Description:
+      // - mixin to fluidly scale type from a minimum font size to a maximum font size, within a range of screen sizes, while maintaining ability for user to adjust preferred base font size
+      ////
+    
+    ////// @param $_f-maxFont
+      // - the largest size that the type should be
+      // - should be a UNITLESS value (but will ultimately have rem appended)
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_f-minFont
+      // - the smallest size that the type should be
+      // - should be a UNITLESS value (but will ultimately have rem appended)
+      // - defaults to the root font size
+      ////
+    
+    ////// @param $_mq-maxWidth
+      // - the screen size at which the max font size should be reached and the type should stop growing
+      // - should be a UNITLESS value (but will ultimately have em appended)
+      // - defaults to 75em (1200px)
+      ////
+    
+    ////// @param $_mq-minWidth
+      // - the screen size at which the type should begin to scale from small to large
+      // - should be a UNITLESS value (but will ultimately have em appended)
+      // - defaults to 20em (320px)
+      ////
+    
+    ////// Instructions:
+      // - Do not apply to the html or body elements
+      // - Reserve use for larger display type, not body type
+      ////
+    
+      font-size: #{$_f-minFont}rem;
+    
+      @media (min-width: #{$_mq-minWidth}rem) and (max-width: #{$_mq-maxWidth}rem) {
+        font-size: calc( #{$_f-minFont}rem + (#{$_f-maxFont} - #{$_f-minFont}) * ( (100vw - #{$_mq-minWidth}rem) / ( #{$_mq-maxWidth} - #{$_mq-minWidth}) ));
+      }
+    
+      @media (min-width: #{$_mq-maxWidth}rem) {
+        font-size: #{$_f-maxFont}rem;
+      }
+    }
+    
+    
+    // ================
+    // Counter
+    
+    @mixin counter($_x-counterName, $_x-item, $_x-number: null) {
+    
+    ////// Description:
+      // - mixin to automatically add a CSS counter to any element
+      ////
+    
+    ////// @param $_x-counterName
+      // - the name of the counter
+      // - should be a STRING
+      // - the name can be whatever you want, as long as it doesn't conflict with other counters
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_x-item
+      // - the item that we are counting (this can be a general selector like "li" or "p")
+      // - should be a STRING containing a CSS selector
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_x-number
+      // - the item to which the numbering should be applied
+      // - should be a STRING containing a CSS selector
+      // - optional parameter - if not supplied, the numbering will be applied directly to the element being counted
+      ////
+    
+    ////// Instructions:
+      // - Identify the element that should wrap your counter (for example, your navigation or the div that wraps your completion steps). The mixin should be called from within this selector.
+      // - Pick a name for your counter and pass that string to $_x-counterName.
+      // - Determine what you're counting, and pass that selector to $_x-item. (this can be a general selector like "li" or "p")
+      // - Optional: Based on your design, determine where the numbering should be applied and pass that selector to $_x-number. For example, if you're counting completion steps, and you want the numbering applied to the headline within each step, you might pass "h3" to $_x-number.
+      ////
+    
+      counter-reset: $_x-counterName;
+      #{$_x-item} {
+        counter-increment: $_x-counterName;
+        @if( $_x-number == null ) {
+          &::before {
+            content: counter(#{$_x-counterName});
+          }
+        } @else {
+          #{$_x-number}::before {
+            content: counter(#{$_x-counterName});
+          }
+        }
+      }
+    }
+    
+    
+    // ================
+    // Flexbox Sticky Footer
+    
+    @mixin stickyFooter($_x-content, $_x-wrapper: 'body', $_x-ieFix: 'false') {
+    
+    ////// Description:
+      // - mixin to automatically execute a Flexbox sticky footer
+      ////
+    
+    ////// @param $_x-content
+      // - the element that wraps the main page content and should extend to fill the extra available space on the screen
+      // - should be a STRING containing a CSS selector
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_x-wrapper
+      // - the element that wraps the main page content, as well as additional elements like headers and footers
+      // - should be a STRING containing a CSS selector
+      // - defaults to "body", but a different selector can be provided if you have additional wrapper divs within the body
+      ////
+    
+    ////// @param $_x-ieFix
+      // - a BOOLEAN value ("true" or "false")
+      // - addresses an IE bug (it does not support min-height in a vertically oriented Flexbox structure), which causes the sticky footer not to work in IE
+      // - the fix is that min-height is replaced with height ... in most cases this will work fine, but it can cause some undesired side effects with background images
+      ////
+    
+    ////// Instructions:
+      // - This mixin should be declared outside of any selector.
+      // - Look at the content of your page and determine the markup structure. If your header, footer and main content are immediate children of the body, you only need to supply one value: the selector for the main content. If you have additional wrappers, you may need to provide a value for the second parameter as well.
+      // - Test your page in IE and determine whether you need the IE fix. If you do, set the last parameter to "true".
+      ////
+    
+      // Safari fix to prevent unclickable elements
+      @if $_x-ieFix == 'true' {
+        @at-root body {
+          position: relative;
+        }
+      }
+    
+      #{$_x-wrapper} {
+        @include flexbox();
+        @include flex-direction(column);
+        @if $_x-ieFix == 'true' {
+          height: 100vh;
+        } @else {
+          min-height: 100vh;
+        }
+        & > * {
+          @include flex-shrink(0);
+        }
+      }
+      #{$_x-content} {
+        @include flex-grow(1);
+      }
+    }
+    
+    
+    // ================
+    // Proportional Element Scaling
+    
+    @mixin propScale($_d-widthVW, $_d-heightVW, $_mq-max: 75em, $_mq-min: 20em) {
+    
+    ////// Description:
+      // - mixin to scale the width and height of a fixed aspect ratio element (like a logo) proportional to the screen size
+      ////
+    
+    ////// @param $_d-widthVW
+      // - the width of the element, proportional to the viewport width
+      // - should be a VW value (such as 50vw)
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_d-heightVW
+      // - the height of the element, proportional to the viewport width
+      // - should be a VW value (such as 15vw)
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_mq-max
+      // - the screen size at which the element should be at its maximum size
+      // - should be an EM value
+      // - defaults to 75em (1200px)
+      ////
+    
+    ////// @param $_mq-min
+      // - the screen size at which the element should be at its minimum size
+      // - should be an EM value
+      // - defaults to 20em (320px)
+      ////
+    
+    ////// Instructions:
+      // - Add the mixin to the element that you want to scale.
+      // - Scale your viewport to a medium screen size (around 768px perhaps)
+      // - Either according to a comp, or just eyeballing it, determine the desired width and height of the element, relative to the viewport width. Supply these values for the first two parameters. Do not supply anything for the third and fourth parameters yet.
+      // - Save your Sass and refresh the page.
+      // - Scale your viewport up until the element reaches the maximum desired size. Take note of the screen size, and pass this value to the third parameter as an EM value.
+      // - Scale your viewport down until the element reaches the minimum desired size. Take note of the screen size, and pass this value to the fourth parameter as an EM value.
+      ////
+    
+      $_d-width: ( $_d-widthVW / 1vw ) / 100;
+      $_d-height: ( $_d-heightVW / 1vw ) / 100;
+      $_mq-min: $_mq-min / 1em;
+      $_mq-max: $_mq-max / 1em;
+      display: block;
+      width: $_d-widthVW;
+      min-width: #{ $_d-width * $_mq-min }rem;
+      max-width: #{ $_d-width * $_mq-max }rem;
+      height: $_d-heightVW;
+      min-height: #{ $_d-height * $_mq-min }rem;
+      max-height: #{ $_d-height * $_mq-max }rem;
+    }
+    
+    
+    // ================
+    // Proportional Element Scaling v2
+    
+    @mixin propScale-v2($_d-viewportWidth-max, $_d-viewportWidth-min, $_d-imgWidth-max, $_d-imgHeight-max, $_d-baseFontSize: 16) {
+    
+    ////// Description:
+      // - mixin to scale the width and height of a fixed aspect ratio element (like a logo) proportional to the screen size
+      ////
+    
+    ////// @param $_d-viewportWidth-max
+      // - the MAXIMUM viewport width you would like your image to STOP scaling
+      // - should be the unitless pixel value
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_d-viewportWidth-min
+      // - the MINIMUM viewport width you would like your image to STOP scaling
+      // - should be the unitless pixel value
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_d-imgWidth-max
+      // - the max width of your image
+      // - should be the unitless pixel value
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_d-imgHeight-max
+      // - the max height of your image
+      // - should be the unitless pixel value
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_d-baseFontSize
+      // - the base font size of your site
+      // - should be the unitless pixel value
+      // - defaults to 16
+      ////
+    
+      $_d-widthVW: $_d-imgWidth-max/$_d-viewportWidth-max;
+      $_d-heightVW: $_d-imgHeight-max/$_d-viewportWidth-max;
+      $_d-width: $_d-widthVW;
+      $_d-height: $_d-heightVW;
+      $_mq-max: $_d-viewportWidth-max/$_d-baseFontSize;
+      $_mq-min: $_d-viewportWidth-min/$_d-baseFontSize;
+    
+      display: block;
+      width: $_d-widthVW * 100vw;
+      min-width: #{ $_d-width * $_mq-min }rem;
+      max-width: #{ $_d-width * $_mq-max }rem;
+      height: $_d-heightVW  * 100vw;
+      min-height: #{ $_d-height * $_mq-min }rem;
+      max-height: #{ $_d-height * $_mq-max }rem;
+    }
+    
+    
+    // ================
+    // Full-Width Spacing
+    
+    @mixin fullWidthSpacing($_d-spacingPercent, $_mq-max: 75em, $_x-paddingOrMargin: 'padding') {
+    
+    ////// Description:
+      // - mixin to apply fluid padding or margin to a full-width section that will stop increasing at a desired screen size
+      ////
+    
+    ////// @param $_d-spacingPercent
+      // - the desired amount of padding or margin, relative to the viewport width
+      // - should be a % value (such as 10%)
+      // - REQUIRED parameter
+      ////
+    
+    ////// @param $_mq-max
+      // - the screen size at which the padding or margin should stop increasing
+      // - should be an EM value
+      // - defaults to 75em (1200px)
+      ////
+    
+    ////// @param $_x-paddingOrMargin
+      // - specify whether you are setting padding or margin with the mixin
+      ////
+    
+    ////// Instructions:
+      // - Scale your viewport to a medium screen size (around 768px perhaps) and add the desired amount of padding/margin. Take note of this % value.
+      // - Scale your viewport up until you reach the screen size where you would like the padding/margin to stop increasing. Take note of the screen size.
+      // - Add the mixin to the section, passing in the above values where appropriate.
+      ////
+    
+      $_d-spacing: ( $_d-spacingPercent / 1% ) / 100;
+      $_mq-max: $_mq-max / 1em;
+      @if $_x-paddingOrMargin == 'margin' {
+        margin-top: $_d-spacingPercent;
+        margin-bottom: $_d-spacingPercent;
+        @media ( min-width: #{$_mq-max}em ) {
+          margin-top: #{ $_d-spacing * $_mq-max }rem;
+          margin-bottom: #{ $_d-spacing * $_mq-max }rem;
+        }
+      } @else {
+        padding-top: $_d-spacingPercent;
+        padding-bottom: $_d-spacingPercent;
+        @media ( min-width: #{$_mq-max}em ) {
+          padding-top: #{ $_d-spacing * $_mq-max }rem;
+          padding-bottom: #{ $_d-spacing * $_mq-max }rem;
+        }
+      }
+    }
+    
+    // Function to return a max value for a breakpoint (1px less)
+    @function maxMQ($_mq-breakpoint) {
+      @return $_mq-breakpoint - 0.0625em;
+    }
+
+   
+// =================================
+//	Mixins
+// =================================
+
+@mixin center($width, $max-width) {
+	width: $width;
+	max-width: $max-width;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+// @mixin titleStyle($borderColor) {
+// 	display: inline-block;
+// 	margin-bottom: 1em;
+// 	padding-bottom: .25em;
+// 	border-bottom: .125em solid #{$borderColor};
+// }
+
+//---- Font Face
+
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+	$src: null;
+
+	$extmods: (
+		eot: "?",
+		svg: "#" + str-replace($name, " ", "_")
+	);
+
+	$formats: (
+		otf: "opentype",
+		ttf: "truetype"
+	);
+
+	@each $ext in $exts {
+		$extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+		$format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+		$src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+	}
+
+	@font-face {
+		font-family: quote($name);
+		font-style: $style;
+		font-weight: $weight;
+		src: $src;
+	}
+}
+
+
+// Box-Shadow
+@mixin box-shadow {
+	-webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+	-moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+	box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+}
+
+// Page Tags
+@mixin pageTag {
+    position: absolute;
+    top: 56vh;
+    left: -36px;
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    transform: rotate(-90deg);
+    color: $c-theme2;
+    background-color: $c-theme1;
+    display: inline-block;
+    padding: 1em 2em;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin: 0;
+    font-size: .75em;
+    z-index: 1;
+    @media (min-width: $mq-small) {
+        top: 61vh;
+        left: -36px;
+    }
+}
+
+@mixin glow {
+  -webkit-box-shadow: 0px 15px 29px 0px rgba(249,129,105,0.68);
+  -moz-box-shadow: 0px 15px 29px 0px rgba(249,129,105,0.68);
+  box-shadow: 0px 15px 29px 0px rgba(249,129,105,0.68);
+}
+
+@mixin shadow {
+  -webkit-box-shadow: 0px 15px 29px 0px rgba(0,0,0,0.16);
+  -moz-box-shadow: 0px 15px 29px 0px rgba(0,0,0,0.16);
+  box-shadow: 0px 15px 29px 0px rgba(0,0,0,0.16);
+}
+
+@mixin shadow2 {
+  -webkit-box-shadow: 0px 15px 29px 0px rgba(235,241,245,0.9);
+  -moz-box-shadow: 0px 15px 29px 0px rgba(235,241,245,0.9);
+  box-shadow: 0px 15px 29px 0px rgba(235,241,245,0.9);
+}
+
+
+// =================================
+//	Functions
+// =================================
+
+
+// This turns the context you're targetting,
+// (in this case it's the max-width of 50em) into a percentage.
+// *** MAKE SURE THE MAX-WIDTH AMOUNT IS IN EMS
+@function em-to-pc($target, $context: 50em) {
+    @return ($target / $context) * 100%;
+  }
+  
+  
+  // This turns the gutter space (.5em) between the flexboxes into percentages
+  // and then based on the number of boxes you want on each row
+  // it will calculate the flex-basis percentage!
+  // * When we apply the em-to-pc function, it's targeting the 10px gutter
+  // and accounting for the max-width we've set.
+  // *** MAKE SURE THE GUTTER AMOUNT IS IN EMS
+  // *** ----------- MAKE SURE THE MARGINS & PADDING AREN'T TOO LARGE OR
+  // IT WILL THROW OFF THE CALCULATIONS! LOOK IN INSPECTOR! YOU MAY
+  // HAVE TO CHANGE MAX-WIDTH OF FLEX-PARENT...--------------
+  @function per-line($items) {
+    $g-pct: em-to-pc(.5em) * 2;
+    $g-total: $items * $g-pct;
+    @return (100% / $items) - $g-total;
+  }
+
+
+
+// =================================
+//	Variables
+// =================================
+// Breakpoints
+$mq-xxLarge: 100em; // 1600px
+$mq-xLarge: 85.9375em; // 1375px
+$mq-large: 75em; // 1200px
+$mq-mediumLarge: 64em; // 1024px
+$mq-medium: 56.25em; // 900px
+$mq-mediumSmall: 48em; // 768px
+$mq-small: 37.5em; // 600px
+$mq-tiny: 30em; // 480px
+$mq-base: 20em; // 320px
+
+//Colors
+$c-white: #FFFFFF;
+$c-black: #000000;
+$c-theme1: #542400;
+$c-theme2: #DE7915;
+$c-theme3: #ABADAE;
+// $c-theme3: #757575; //darkened for accessability
+
+
+
+// =================================
+//	Type
+// =================================
+
+* {-webkit-font-smoothing: antialiased; -moz-font-smoothing: grayscale;}
+
+@import url('https://fonts.googleapis.com/css2?family=Muli:wght@400;600;700&display=swap');
+
+//Font Stacks
+$f-headlineFont: Georgia, serif;
+$f-bodyFont:  'Muli', sans-serif;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+	text-align: center;
+	margin: 0;
+  font-family: $f-bodyFont;
+}
+
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  line-height: 1.2;
+  font-weight: bold;
+  font-family: $f-headlineFont;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  color: $c-theme1;
+}
+
+
+
+
+h1 {
+  @include fluidTypeSize(3.5, 2);
+}
+
+h2 {
+  @include fluidTypeSize(2.25, 1.5);
+}
+
+h3 {
+  @include fluidTypeSize(1.5, 1.3);
+}
+
+h4 {
+  @include fluidTypeSize(1.125, 1.125);
+}
+
+h5 {
+  @include fluidTypeSize(.875, .875);
+  font-family: $f-bodyFont;
+  color: $c-theme3;
+  font-weight: normal;
+}
+
+h6 {
+  @include fluidTypeSize(.875, .875);
+  font-family: $f-bodyFont;
+  color: $c-theme1;
+}
+
+
+
+// ================
+// Body Copy
+p {
+  @include fluidTypeSize(.85, .8);
+  font-family: $f-bodyFont;
+  margin-bottom: 1em;
+  line-height: 1.8;
+  letter-spacing: 1px;
+  color: $c-theme1;
+}
+
+
+ul,
+ol,
+blockquote,
+address {
+  font-style: normal;
+  font-family: $f-bodyFont;
+}
+
+ul,
+ol {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin: 0;
+  }
+}
+
+a {
+    text-decoration: none;
+    transition: all .6s;
+
+  &:hover,
+  &:focus {
+    color: $c-theme2;
+  }
+}
+
+
+
+// ================
+// Buttons
+// ================
+  // ================
+  // Extendable Placeholders
+  
+  // Base Button Styles
+  %button {
+    background-color: $c-theme2;
+    font-family: $f-bodyFont;
+    font-size: 1.125em;
+    border-radius: 20px;
+    font-weight: bold;
+    color: $c-white;
+    padding: .6em 1em;
+    display: inline-block;
+      &:hover,
+      &:focus {
+        @include glow;
+        color: $c-white;
+        opacity: 1;
+      }
+      @media (max-width: $mq-small) {
+        width: 100%;
+        margin: auto;
+      }
+  }
+  
+  
+  // Major Buttons
+  %major-button {
+    @extend %button;
+  }
+  
+  
+  // Minor Buttons
+  %minor-button {
+    @extend %major-button; 
+    color: $c-theme2;
+    background-color: transparent;
+    border: thin solid transparent;
+    &:hover,
+    &:focus {
+        border: thin solid $c-theme2;
+        background-color: transparent;
+        color: $c-theme2;
+    }
+  }
+
+  .nav-bar-items, .footer-bar-items {
+    li a {
+      color: $c-theme1;
+      &:hover,
+      &:focus {
+        color: $c-theme2;
+      }
+    }
+    .order-btn {
+      @extend %button;
+    }
+  }
+
+
+// =================================
+//	Forms
+// =================================
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+input[type="text"],
+textarea[type="text"] {
+	color: $c-theme1;
+  @include fluidTypeSize(1.5, 1);
+  width: 100%;
+}
+
+
+// textarea[type="text"] {
+// 	height: 10em;
+// }
+
+input[type="text"]::placeholder,
+textarea[type="text"]::placeholder {
+	font-family: $f-bodyFont;
+    color: $c-theme3;
+    @include fluidTypeSize(1.5, 1);
+}
+
+// button[type="submit"]:hover,
+// input[type="text"]:hover,
+// textarea[type="text"]:hover,
+// select:hover {
+// 	-webkit-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+// 	-moz-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+//   box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+// }
+
+// select:hover {
+//   border: thin solid $c-white;
+// }
+
+// input[type="text"]:hover,
+// textarea[type="text"]:hover {
+// 	border: thin solid $c-white;
+// }
+
+
+input[type="text"]:focus,
+button[type="submit"]:focus,
+textarea[type="text"]:focus,
+select:focus {
+  outline: none;
+}
+
+// input[type="text"]:focus {
+// 	-webkit-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+// 	-moz-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+// 	box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.5);
+// }
+
+
+button[type="submit"] {
+	@extend %button;
+	width: 100%;
+	cursor: pointer;
+	border: none;
+	transition: all .5s;
+}
+
+/* ================================= 
+  Layout - Base Styles
+==================================== */
+html {
+    @include stickyFooter('main');
+    body {
+      background-color: $c-white;
+    }
+}
+
+nav {
+	.mobile-nav-bar{
+		.top-nav-bar {
+      padding: 1em 0;
+      position: relative;
+			.wrapper {
+        @include center(90%, $mq-mediumLarge);
+				@include flexbox;
+				@include justify-content(space-between);
+				@include align-items(center);
+				.logo img {
+          transition: all .5s;
+          width: 100%;
+          max-width: 6em;
+					&:hover,
+					&:focus {
+						opacity: .6;
+          }
+				}
+				#menu {
+          transition: all .5s;
+					&:hover {
+						opacity: .4;
+					}
+					&::after {
+						content: "\f0c9";
+						font-family: 'FontAwesome';
+						display: inline-block;
+						width: 100%;
+						font-size: 1.5em;
+						color: $c-theme1;
+					}
+				}
+			}
+		}
+		#bottom-nav-bar {
+			display: none;
+      padding: 2em 0 1em;
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+      background-color: $c-white;
+			.nav-bar-items {
+        height: calc(100vh - 310px);
+        width: 90%;
+        margin: auto;
+        @include flexbox;
+        @include flex-direction(column);
+        @include justify-content(space-between);
+        li:not(:last-child) {
+          margin-bottom: 1em;
+        }
+			}
+		}
+		@media (min-width: $mq-mediumSmall) {
+			display: none;
+		}
+	}
+	.desktop-nav-bar {
+		padding: 1.5em 0;
+		.wrapper {
+            @include center(90%, 90%);
+            @include flexbox;
+            @include justify-content(space-between);
+            .logo img {
+                transition: all .5s;
+                width: 100%;
+                max-width: 7em;
+                &:hover,
+                &:focus {
+                    opacity: .6;
+                }
+            }
+            .nav-bar-items {
+                @include flexbox;
+                @include flex-direction(row);
+                @include justify-content(space-around);
+                @include align-items(center);
+                li {
+                    margin-left: 1em;
+                }
+            }
+        }
+        // One pixel under $mq-mediumSmall(768px) so there is overlap of hide/show on tablet
+		@media (max-width: 767px) {
+			display: none;
+		}
+	}
+}
+
+footer {
+  padding: 5% 0;
+  .wrapper {
+    @include center(90%, $mq-small);
+    .footer-links {
+      margin-bottom: 5%;
+      padding-bottom: 5%;
+      border-bottom: thin solid $c-theme3;
+      .logo img {
+        margin: 0 0 1em 0;
+      }
+      .footer-bar-items {
+        li:not(:last-child) {
+          margin: 0 0 1em 0;
+        }
+        .order-btn {
+          max-width: 150px;
+          margin: auto;
+        }
+      }
+    }
+    @media (min-width: $mq-small) {
+      margin-left: 5%;
+      .footer-links {
+        @include flexbox;
+        @include align-items(center);
+        .logo img {
+          margin: 0 2em 0 0;
+        }
+        .footer-bar-items {
+          @include flexbox;
+          @include align-items(center);
+          li, li:not(:last-child) {
+            margin: 0 0 0 2em;
+          }
+        }
+      }
+      .legal {
+        h5 {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
+/* ================================= 
+  Nav scrolling
+==================================== */
+.scroll-id:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+
+
+/* ================================= 
+  Homepage
+==================================== */
+#homepage {
+  nav {
+    position: absolute;
+    width: 100%;
+  }
+    main {
+      overflow-x: hidden;
+    .hero {
+      @include flexbox;
+      @include align-items(center);
+      @include justify-content(center);
+      height: 100vh;
+      background: $c-white url("../img/hero.jpg") no-repeat bottom center / cover;
+      .wrapper {
+        @include center(90%, 90%);
+        margin-top: 10%;
+        @media (min-width: $mq-medium) {
+          max-width: 640px;
+          margin-right: 5%;
+          text-align: right;
+        }
+      }
+    }
+    #about {
+      background: $c-white url("../img/about-bg.jpg") no-repeat top center / cover;
+      .wrapper {
+        @include center(90%, 90%);
+        .about-section1 {
+          margin-bottom: 10%;
+          .about-image1 {
+            background: $c-white url("../img/about-img1.jpg") no-repeat top center / cover;
+            height: 500px;
+            width: 100%;
+            max-width: 300px;
+            margin: auto;
+            border-radius: 0 100px 0 100px;
+            margin-bottom: 5%;
+            @include shadow;
+          }
+          @media (min-width: $mq-mediumSmall) {
+            @include flexbox;
+            .about-text1 {
+              text-align: left;
+              width: 60%;
+              margin-left: 5%;
+            }
+            .about-image1 {
+              margin: 0 auto 0 0;
+              width: 40%;
+            }
+          }
+        }
+        .about-section2 {
+          @include flexbox;
+          @include flex-direction(column);
+          margin-bottom: 10%;
+          .about-image2 {
+            background: transparent url("../img/about-img2.png") no-repeat top center / contain;
+            height: 340px;
+            width: 100%;
+            margin: auto;
+            margin-bottom: 10%;
+            order: -1;
+          }
+          .menu-btn {
+            @extend %button;
+          }
+          @media (min-width: $mq-mediumSmall) {
+            @include flex-direction(row);
+            .about-text2 {
+              text-align: left;
+              width: 40%;
+              margin-right: 5%;
+            }
+            .about-image2 {
+              width: 60%;
+              order: 0;
+              height: 530px;
+              margin-bottom: 0;
+            }
+          }
+        }
+        .about-section3 {
+          @include center(90%, $mq-medium);
+          margin-bottom: 5%;
+        }
+      }
+    }
+    .mid-page-cta {
+      background: $c-white url("../img/oranges-bg.jpg") no-repeat fixed top center / cover;
+      padding: 5%;
+      .overlay {
+        background-color: $c-white;
+        opacity: .8;
+        padding: 5%;
+        .wrapper {
+          @include center(90%, $mq-medium);
+        }
+      }
+    }
+    #juiceMenu {
+      background: $c-white url("../img/menu-bg.jpg") no-repeat bottom center / cover;
+      padding-top: 10%;
+      .wrapper {
+        @include center(90%, 90%);
+        .prices {
+          margin: 5% 0;
+          .single {
+            margin-bottom: 5%;
+          }
+          @media (min-width: $mq-mediumSmall) {
+            @include flexbox;
+            @include center(90%, $mq-mediumSmall);
+            @include justify-content(center);
+            @include justify-content(space-between);
+          }
+        }
+        .menu-cards {
+          margin-bottom: 1em;
+          .card {
+            margin-bottom: 5%;
+            .card-img {
+              background: $c-white no-repeat center center / cover;
+              width: 100%;
+              height: 200px;
+              border-radius: 20px 20px 0 0;
+            }
+            .card-content {
+              background-color: $c-white;
+              padding: 5%;
+              border-radius: 0 0 20px 20px;
+              @include shadow2;
+              min-height: 250px;
+              h4, h5, h6 {
+                margin-bottom: 5%;
+                text-align: left;
+              }
+            }
+          }
+          @media (min-width: $mq-mediumSmall) {
+            @include flexbox;
+            @include flex-wrap(wrap);
+            @include justify-content(space-between);
+            .card {
+              width: 45%;
+            }
+          }
+          @media (min-width: $mq-large) {
+            .card {
+              width: 30%;
+            }
+          }
+        }
+        .order-btn {
+          @extend %button;
+        }
+      }
+      .merch {
+        padding: 10% 0 5%;
+        h2 {
+          padding-bottom: 5%;
+        }
+        .merch-placeholder {
+          background-color: $c-black;
+          height: 400px;
+          width: 100%;
+        }
+      }
+    }
+    #contact {
+      padding: 10% 0;
+      @include center(90%, 90%);
+      .wrapper {
+        position: relative;
+        @include shadow2;
+        background-color: $c-white;
+        padding: 10%;
+        border-radius: 13px;
+        h2 {
+          margin-bottom: 5%;
+        }
+        form {
+          fieldset {
+            border: none;
+            input {
+              border: none;
+              background-color: #F9FBFB;
+              padding: 1em;
+              margin-bottom: 1em;
+            }
+            button {
+              @include fluidTypeSize(1.5, 1);
+              padding: 1em;
+              span {
+                background: url(../img/airplane_icon.png);
+                display: inline-block;
+                position: absolute;
+                width: 100%;
+                height: 1em;
+                margin-left: 1em;
+                background-size: contain;
+                background-repeat: no-repeat;
+              }
+            }
+          }
+        }
+        &:before {
+          content: "";
+          background: url(../img/dots.png);
+          display: block;
+          position: absolute;
+          left: -10%;
+          top: -66px;
+          width: 383px;
+          height: 51%;
+          background-size: contain;
+          background-repeat: no-repeat;
+          z-index: -1;
+        }
+        &:after {
+          content: "";
+          background: url(../img/dots.png);
+          display: block;
+          position: absolute;
+          -webkit-transform: scaleX(-1);
+          transform: scaleX(-1);
+          right: -10%;
+          bottom: -66px;
+          width: 383px;
+          height: 51%;
+          background-size: contain;
+          background-repeat: no-repeat;
+          z-index: -1;
+        }
+      }
+      @media (min-width: $mq-mediumSmall) {
+        @include center(70%, 70%);
+      }
+    }
+  }
+}
