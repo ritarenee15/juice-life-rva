@@ -953,7 +953,7 @@ button[type="submit"] {
   transition: all .5s;
 }
 
-/* ================================= 
+/* =================================
   Layout - Base Styles
 ==================================== */
 html body {
@@ -1200,7 +1200,7 @@ footer .wrapper .footer-links .footer-bar-items .order-btn {
   }
 }
 
-/* ================================= 
+/* =================================
   Nav scrolling
 ==================================== */
 .scroll-id:focus {
@@ -1208,7 +1208,7 @@ footer .wrapper .footer-links .footer-bar-items .order-btn {
   outline-style: none;
 }
 
-/* ================================= 
+/* =================================
   Homepage
 ==================================== */
 #homepage nav {
@@ -1269,7 +1269,7 @@ footer .wrapper .footer-links .footer-bar-items .order-btn {
 }
 
 #homepage main #about .wrapper .about-section1 .about-image1 {
-  background: #FFFFFF url("../img/about-img1.jpg") no-repeat top center/cover;
+  background: #FFFFFF url("../img/owners.jpg") no-repeat top center/cover;
   height: 500px;
   width: 100%;
   max-width: 300px;
