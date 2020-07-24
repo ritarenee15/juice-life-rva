@@ -2060,6 +2060,18 @@ footer {
         }
       }
     }
+    .hours-address {
+      color: $c-theme1;
+      .hours {
+        margin-bottom: 1em;
+        &-title {
+          font-weight: bold;
+        }
+      }
+      .address {
+        margin-bottom: 1em;
+      }
+    }
     @media (min-width: $mq-small) {
       margin-left: 5%;
       .footer-links {
@@ -2074,6 +2086,14 @@ footer {
           li, li:not(:last-child) {
             margin: 0 0 0 2em;
           }
+        }
+      }
+      .hours-address {
+        .wrapper {
+          @include flexbox;
+          @include justify-content(space-between);
+          margin: 0;
+          text-align: left;
         }
       }
       .legal {
