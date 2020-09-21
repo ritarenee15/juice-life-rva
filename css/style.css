@@ -1245,7 +1245,7 @@ footer .wrapper .hours-address .address {
 }
 
 #homepage main {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #homepage main .hero {
