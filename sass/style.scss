@@ -2123,7 +2123,7 @@ footer {
     width: 100%;
   }
     main {
-      overflow-x: hidden;
+      overflow: hidden;
     .hero {
       @include flexbox;
       @include align-items(center);
